@@ -38,4 +38,3 @@ jobs:
         run: |
           make clean
           echo "Cleanup completed."
-  
