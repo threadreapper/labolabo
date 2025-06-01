@@ -1,6 +1,9 @@
-name: CI for C project
+name: CI for C Project
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -21,16 +24,24 @@ jobs:
       - name: Check code formatting
         run: |
           set -e
-          find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-          find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
+          # Используем Google стиль форматирования
+          find . -regex '.*\.[ch]' -exec clang-format -style=Google --dry-run --Werror {} +
+          echo "Code formatting check passed."
 
       - name: Build project
         run: |
           set -e
+          make clean
           make
-
+          echo "Build completed successfully."
 
       - name: Run tests
         run: |
           set -e
-          make run
+          make tests
+          echo "All tests passed."
+
+      - name: Cleanup
+        run: |
+          make clean
+          echo "Cleanup completed."
