@@ -16,32 +16,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y gcc make clang-format
-
       - name: Check code formatting
         run: |
           set -e
-          # Используем Google стиль форматирования
-          find . -regex '.*\.[ch]' -exec clang-format -style=Google --dry-run --Werror {} +
+          if ! find . -regex '.*\.[ch]' -exec clang-format -style=Google --dry-run --Werror {} +; then
+            echo "Code formatting check failed. Please run 'make format' to fix formatting issues."
+            exit 1
+          fi
           echo "Code formatting check passed."
 
-      - name: Build project
+      - name: Build and test
         run: |
           set -e
           make clean
           make
-          echo "Build completed successfully."
-
-      - name: Run tests
-        run: |
-          set -e
           make tests
-          echo "All tests passed."
+          echo "Build and tests completed successfully."
 
       - name: Cleanup
+        if: always()
         run: |
           make clean
           echo "Cleanup completed."
+  
