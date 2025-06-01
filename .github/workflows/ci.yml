@@ -1,36 +1,17 @@
-name: CI for C project
+name: Main CI-pipeline
 
-on:
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y gcc make clang-format
+      - name: Checkstyle
+        working-directory: LW-1
+        run: make check_fmt
 
-      - name: Check code formatting
-        run: |
-          set -e
-          find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-          find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
-
-      - name: Build project
-        run: |
-          set -e
-          make
-
-
-      - name: Run tests
-        run: |
-          set -e
-          make run
+      - name: Tests
+        working-directory: LW-1
+        run: make tests
