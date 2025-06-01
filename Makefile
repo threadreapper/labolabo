@@ -1,32 +1,35 @@
-TARGETS = LinearAllocator
-TEST_TARGETS = $(addprefix test_, $(TARGETS))
+TASKS = dynamic_array
+TEST_EXECUTABLES = $(addprefix test_, $(TASKS))
 
-clean:
+clear:
     rm -rf *.o *.a *_test
 
-check_style:
-    clang-format -style=Google -i `find -regex ".+\.[ch]"` --dry-run --Werror
+check_fmt:
+    clang-format -style=LLVM -i `find -regex ".+\.[ch]"` --dry-run --Werror
 
-format:
-    clang-format -style=Google -i `find -regex ".+\.[ch]"`
+fmt:
+    clang-format -style=LLVM -i `find -regex ".+\.[ch]"`
 
-tests: $(TEST_TARGETS)
+tests: $(TEST_EXECUTABLES)
 
-.PHONY: tests clean
+.PHONY: tests clear
 
-# Linear Allocator
+# Dynamic Array
 
 LinearAllocator.o: LinearAllocator.h LinearAllocator.c
     gcc -g -c LinearAllocator.c -o LinearAllocator.o
 
-LinearAllocator.a: LinearAllocator.o
-    ar rc LinearAllocator.a LinearAllocator.o
+dynamic_array.o: dynamic_array.h dynamic_array.c LinearAllocator.h
+    gcc -g -c dynamic_array.c -o dynamic_array.o
 
-LinearAllocator_test.o: LinearAllocator_test.c
-    gcc -g -c LinearAllocator_test.c -o LinearAllocator_test.o
+dynamic_array.a: dynamic_array.o LinearAllocator.o
+    ar rc dynamic_array.a dynamic_array.o LinearAllocator.o
 
-LinearAllocator_test: LinearAllocator_test.o LinearAllocator.a
-    gcc -g -static -o LinearAllocator_test LinearAllocator_test.o LinearAllocator.a -lm
+dynamic_array_test.o: dynamic_array_test.c dynamic_array.h LinearAllocator.h
+    gcc -g -c dynamic_array_test.c -o dynamic_array_test.o
 
-test_LinearAllocator: LinearAllocator_test
-    ./LinearAllocator_test
+dynamic_array_test: dynamic_array_test.o dynamic_array.a
+    gcc -g -static -o dynamic_array_test dynamic_array_test.o dynamic_array.a -lm
+
+test_dynamic_array: dynamic_array_test
+    ./dynamic_array_test
