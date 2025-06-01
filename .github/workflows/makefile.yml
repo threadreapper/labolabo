@@ -1,23 +1,51 @@
-name: Main CI-pipeline
+name: Main CI Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - RefCounter
+  pull_request:
+    branches:
+      - main
+      - RefCounter
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y clang-format gcc make
+          sudo apt install -y clang-format gcc make valgrind
 
-      - name: Checkstyle
-        run: make check_fmt
+      - name: Cache build artifacts
+        id: cache-build
+        uses: actions/cache@v3
+        with:
+          path: |
+            *.o
+            *.a
+            *_test
+          key: ${{ runner.os }}-build-${{ hashFiles('**/*.c', '**/*.h', 'Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
 
-      - name: Tests
+      - name: Check code formatting
+        run: make check_style
+
+      - name: Build the project
+        run: make
+
+      - name: Run tests
         run: make tests
+
+      - name: Check memory leaks
+        run: make valgrind
 
       - name: Cleanup
         if: always()
