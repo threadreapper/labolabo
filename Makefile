@@ -1,7 +1,10 @@
+TEST_TARGETS = $(addprefix test_, $(TARGETS))
 fmt:
 	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
 check_fmt:
 	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
+
+tests: $(TEST_TARGETS)
 
 run:
 	find . -name "Makefile" -execdir make -f {} \;
