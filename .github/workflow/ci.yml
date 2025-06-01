@@ -1,40 +1,24 @@
-name: CI for C Project
+name: Main CI-pipeline
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Check code formatting
+      - name: Install dependencies
         run: |
-          set -e
-          if ! find . -regex '.*\.[ch]' -exec clang-format -style=Google --dry-run --Werror {} +; then
-            echo "Code formatting check failed. Please run 'make format' to fix formatting issues."
-            exit 1
-          fi
-          echo "Code formatting check passed."
+          sudo apt update
+          sudo apt install -y clang-format gcc make
 
-      - name: Build and test
-        run: |
-          set -e
-          make clean
-          make
-          make tests
-          echo "Build and tests completed successfully."
+      - name: Checkstyle
+        run: make check_fmt
+
+      - name: Tests
+        run: make tests
 
       - name: Cleanup
         if: always()
-        run: |
-          make clean
-          echo "Cleanup completed."
+        run: make clean
