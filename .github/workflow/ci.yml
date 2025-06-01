@@ -1,24 +1,32 @@
-name: Main CI-pipeline
+TARGETS = LinearAllocator
+TEST_TARGETS = $(addprefix test_, $(TARGETS))
 
-on: [push, pull_request]
+clean:
+    rm -rf *.o *.a *_test
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+check_style:
+    clang-format -style=Google -i `find -regex ".+\.[ch]"` --dry-run --Werror
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y clang-format gcc make
+format:
+    clang-format -style=Google -i `find -regex ".+\.[ch]"`
 
-      - name: Checkstyle
-        run: make check_fmt
+tests: $(TEST_TARGETS)
 
-      - name: Tests
-        run: make tests
+.PHONY: tests clean
 
-      - name: Cleanup
-        if: always()
-        run: make clean
+# Linear Allocator
+
+LinearAllocator.o: LinearAllocator.h LinearAllocator.c
+    gcc -g -c LinearAllocator.c -o LinearAllocator.o
+
+LinearAllocator.a: LinearAllocator.o
+    ar rc LinearAllocator.a LinearAllocator.o
+
+LinearAllocator_test.o: LinearAllocator_test.c
+    gcc -g -c LinearAllocator_test.c -o LinearAllocator_test.o
+
+LinearAllocator_test: LinearAllocator_test.o LinearAllocator.a
+    gcc -g -static -o LinearAllocator_test LinearAllocator_test.o LinearAllocator.a -lm
+
+test_LinearAllocator: LinearAllocator_test
+    ./LinearAllocator_test
