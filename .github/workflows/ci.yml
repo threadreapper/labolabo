@@ -8,10 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y clang-format gcc make
+
       - name: Checkstyle
-        working-directory: LW-1
         run: make check_fmt
 
       - name: Tests
-        working-directory: LW-1
         run: make tests
+
+      - name: Cleanup
+        if: always()
+        run: make clean
