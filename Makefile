@@ -1,15 +1,47 @@
-fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-check_fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
-
-run:
-	find . -name "Makefile" -execdir make -f {} \;
-	if find . -type f -name "*_test" -exec sh -c '{} && echo "тест пройден успешно"' \; ; then \
-    	echo "Все тесты выполнены."; \
-  	else \
-    	echo "Тесты не найдены."; \
-  	fi
+TARGETS = PoolAllocator hash_table
+TEST_TARGETS = $(addprefix test_, $(TARGETS))
 
 clean:
-	find . -type f \( -name "*.o" -o -name "*.a" -o -name "*_test" \) -exec rm -f {} +
+    rm -rf *.o *.a *_test
+
+check_style:
+    clang-format -style=LLVM -i `find -regex ".+ \.[ch]"` --dry-run --Werror
+
+format:
+    clang-format -style=LLVM -i `find -regex ".+ \.[ch]"`
+
+tests: $(TEST_TARGETS)
+
+.PHONY: tests clean
+
+# Pool Allocator
+PoolAllocator.o: PoolAllocator.h PoolAllocator.c
+    gcc -g -c PoolAllocator.c -o PoolAllocator.o
+
+PoolAllocator.a: PoolAllocator.o
+    ar rc PoolAllocator.a PoolAllocator.o
+
+PoolAllocator_test.o: PoolAllocator_test.c
+    gcc -g -c PoolAllocator_test.c -o PoolAllocator_test.o
+
+PoolAllocator_test: PoolAllocator_test.o PoolAllocator.a
+    gcc -g -static -o PoolAllocator_test PoolAllocator_test.o PoolAllocator.a -lm
+
+test_PoolAllocator: PoolAllocator_test
+    ./PoolAllocator_test
+
+# Hash Table with Pool Allocator
+hash_table.o: hash_table.h hash_table.c
+    gcc -g -c hash_table.c -o hash_table.o
+
+hash_table.a: hash_table.o
+    ar rc hash_table.a hash_table.o
+
+hash_table_test.o: hash_table_test.c
+    gcc -g -c hash_table_test.c -o hash_table_test.o
+
+hash_table_test: hash_table_test.o hash_table.a PoolAllocator.a
+    gcc -g -static -o hash_table_test hash_table_test.o hash_table.a PoolAllocator.a -lm
+
+test_hash_table: hash_table_test
+    ./hash_table_test
