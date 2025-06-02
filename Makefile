@@ -15,7 +15,7 @@ tests: $(TEST_TARGETS)
 valgrind: test_CycleDetector
 	which valgrind || (echo "Error: Valgrind is not installed. Please install it and try again." && exit 1)
 	test -f ./test_CycleDetector || (echo "Error: Executable 'test_CycleDetector' not found. Run 'make' first." && exit 1)
-	valgrind --leak-check=full ./test_CycleDetector
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test_CycleDetector
 
 .PHONY: tests clean valgrind format check_fmt
 
