@@ -1,18 +1,35 @@
+TARGETS = ObjectManager
 TEST_TARGETS = $(addprefix test_, $(TARGETS))
-fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-check_fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
+
+clean:
+	rm -rf *.o *.a *_test
+
+format:
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
+
+check_style:
+	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
 
-run:
-	find . -name "Makefile" -execdir make -f {} \;
-	if find . -type f -name "*_test" -exec sh -c '{} && echo "тест пройден успешно"' \; ; then \
-    	echo "Все тесты выполнены."; \
-  	else \
-    	echo "Тесты не найдены."; \
-  	fi
+valgrind: test_ObjectManager
+	valgrind --leak-check=full ./test_ObjectManager
 
-clean:
-	find . -type f \( -name "*.o" -o -name "*.a" -o -name "*_test" \) -exec rm -f {} +
+.PHONY: tests clean valgrind
+
+# Object Manager
+
+ObjectManager.o: ObjectManager.c ObjectManager.h
+	gcc -g -c ObjectManager.c -o ObjectManager.o
+
+ObjectManager.a: ObjectManager.o
+	ar rc ObjectManager.a ObjectManager.o
+
+ObjectManager_test.o: ObjectManager_test.c
+	gcc -g -c ObjectManager_test.c -o ObjectManager_test.o
+
+ObjectManager_test: ObjectManager_test.o ObjectManager.a
+	gcc -g -static -o ObjectManager_test ObjectManager_test.o ObjectManager.a
+
+test_ObjectManager: ObjectManager_test
+	./ObjectManager_test
