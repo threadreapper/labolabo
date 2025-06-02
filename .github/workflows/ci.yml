@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - spisok
   pull_request:
     branches:
       - main
+      - spisok
 
 jobs:
   build-and-test:
