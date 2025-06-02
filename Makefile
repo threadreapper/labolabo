@@ -21,6 +21,15 @@ PoolAllocator.o: PoolAllocator.h PoolAllocator.c
 PoolAllocator.a: PoolAllocator.o
 	ar rc PoolAllocator.a PoolAllocator.o
 
+PoolAllocator_test.o: PoolAllocator_test.c PoolAllocator.h
+	gcc -g -c PoolAllocator_test.c -o PoolAllocator_test.o
+
+PoolAllocator_test: PoolAllocator_test.o PoolAllocator.a
+	gcc -g -static -o PoolAllocator_test PoolAllocator_test.o PoolAllocator.a -lm
+
+test_PoolAllocator: PoolAllocator_test
+	./PoolAllocator_test
+
 # Hash Table with Pool Allocator
 hash_table.o: hash_table.h hash_table.c PoolAllocator.h
 	gcc -g -c hash_table.c -o hash_table.o
