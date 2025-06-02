@@ -13,6 +13,7 @@ check_style:
 tests: $(TEST_TARGETS)
 
 valgrind: test_ObjectManager
+	which valgrind || (echo "Error: Valgrind is not installed. Please install it and try again." && exit 1)
 	valgrind --leak-check=full ./test_ObjectManager
 
 .PHONY: tests clean valgrind
