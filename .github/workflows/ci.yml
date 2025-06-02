@@ -1,12 +1,14 @@
-name: CI for C Project
+name: CI for Linear Allocator Project
 
 on:
   push:
     branches:
       - main
+      - linear_allocator
   pull_request:
     branches:
-      - main
+      - main\
+      - linear_allocator
 
 jobs:
   build-and-test:
@@ -32,12 +34,12 @@ jobs:
       - name: Build project
         run: |
           set -e
+          make clean
           make
 
       - name: Run tests
         run: |
           set -e
-          # Выполняем тесты через Makefile
           make tests
 
       - name: Clean up build artifacts
