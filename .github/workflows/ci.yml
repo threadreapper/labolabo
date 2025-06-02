@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - CycleDetector
+  pull_request:
+    branches:
+      - main
+      - CycleDetector
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y clang-format gcc make valgrind
+
+      - name: Format code
+        run: make format
+
+      - name: Check code formatting
+        run: make check_fmt
+
+      - name: Build the project
+        run: make
+
+      - name: Run tests
+        run: make tests
+
+      - name: Check memory leaks
+        run: make valgrind
+
+      - name: Cleanup
+        if: always()
+        run: make clean
