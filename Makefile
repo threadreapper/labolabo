@@ -14,8 +14,8 @@ tests: $(TEST_TARGETS)
 
 valgrind: test_ObjectManager
 	which valgrind || (echo "Error: Valgrind is not installed. Please install it and try again." && exit 1)
-	test -f ./test_ObjectManager || (echo "Error: Executable 'test_ObjectManager' not found. Run 'make' first." && exit 1)
-	valgrind --leak-check=full ./test_ObjectManager
+	test -f ./ObjectManager_test || (echo "Error: Executable 'ObjectManager_test' not found. Run 'make' first." && exit 1)
+	valgrind --leak-check=full ./ObjectManager_test
 
 .PHONY: tests clean valgrind
 
@@ -31,7 +31,7 @@ ObjectManager_test.o: ObjectManager_test.c
 	gcc -g -c ObjectManager_test.c -o ObjectManager_test.o
 
 ObjectManager_test: ObjectManager_test.o ObjectManager.a
-	gcc -g -static -o ObjectManager_test ObjectManager_test.o ObjectManager.a
+	gcc -g -o ObjectManager_test ObjectManager_test.o ObjectManager.a
 
 test_ObjectManager: ObjectManager_test
 	./ObjectManager_test
