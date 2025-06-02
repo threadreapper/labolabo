@@ -1,18 +1,35 @@
+TARGETS = RefCounter
 TEST_TARGETS = $(addprefix test_, $(TARGETS))
-fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-check_fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
+
+clean:
+	rm -rf *.o *.a *_test
+
+format:
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
+
+check_style:
+	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
 
-run:
-	find . -name "Makefile" -execdir make -f {} \;
-	if find . -type f -name "*_test" -exec sh -c '{} && echo "тест пройден успешно"' \; ; then \
-    	echo "Все тесты выполнены."; \
-  	else \
-    	echo "Тесты не найдены."; \
-  	fi
+valgrind: test_RefCounter
+	valgrind --leak-check=full ./test_RefCounter
 
-clean:
-	find . -type f \( -name "*.o" -o -name "*.a" -o -name "*_test" \) -exec rm -f {} +
+.PHONY: tests clean valgrind
+
+# Reference Counter
+
+RefCounter.o: RefCounter.c RefCounter.h PoolAllocator.h
+	gcc -g -c RefCounter.c -o RefCounter.o
+
+PoolAllocator.o: PoolAllocator.c PoolAllocator.h
+	gcc -g -c PoolAllocator.c -o PoolAllocator.o
+
+RefCounter.a: RefCounter.o PoolAllocator.o
+	ar rc RefCounter.a RefCounter.o PoolAllocator.o
+
+RefCounter_test.o: RefCounter_test.c
+	gcc -g -c RefCounter_test.c -o RefCounter_test.o
+
+test_RefCounter: RefCounter_test.o RefCounter.a
+	gcc -g -static -o test_RefCounter RefCounter_test.o RefCounter.a
