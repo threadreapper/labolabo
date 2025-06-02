@@ -1,0 +1,45 @@
+name: CI for C Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y gcc make clang-format
+
+      - name: Check code formatting
+        run: |
+          set -e
+          # Применяем форматирование к файлам .c и .h
+          find . -regex '.*\.[ch]' -exec clang-format -style=Google -i {} +
+          # Проверяем, что форматирование соответствует стандарту
+          find . -regex '.*\.[ch]' -exec clang-format -style=Google --dry-run --Werror {} +
+
+      - name: Build project
+        run: |
+          set -e
+          make
+
+      - name: Run tests
+        run: |
+          set -e
+          # Выполняем тесты через Makefile
+          make tests
+
+      - name: Clean up build artifacts
+        run: |
+          make clean
