@@ -26,9 +26,7 @@ jobs:
       - name: Check code formatting
         run: |
           set -e
-          # Форматируем все .c и .h файлы по стандарту LLVM
           find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-          # Проверяем, что форматирование соответствует стандарту
           find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
 
       - name: Clean build artifacts

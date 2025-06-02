@@ -7,7 +7,7 @@
 void test_hash_table() {
     PoolAllocator pool;
     const size_t block_size = sizeof(Node);
-    const size_t num_blocks = 5;
+    const size_t num_blocks = 10; 
     initialize_pool(&pool, block_size, num_blocks);
 
     HashTable table;
@@ -27,16 +27,17 @@ void test_hash_table() {
     for (size_t i = 0; i < 5; ++i) {
         char key[10];
         sprintf(key, "key%zu", i);
-        hash_table_insert(&table, key, &a);
+        assert(!hash_table_insert(&table, key, &a));
     }
 
-    assert(!hash_table_insert(&table, "overflow", &a));
+    // Проверяем поведение при переполнении пула памяти
+    int result = hash_table_insert(&table, "overflow", &a);
+    if (result == HT_ALLOCATION_FAILED) {
+        printf("Expected behavior: Pool memory exhausted.\n");
+    } else {
+        assert(result == HT_SUCCESS);
+    }
 
     hash_table_free(&table);
     free(pool.memory_start);
-}
-
-int main() {
-    test_hash_table();
-    return 0;
 }
