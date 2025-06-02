@@ -1,18 +1,35 @@
+TARGETS = CycleDetector
 TEST_TARGETS = $(addprefix test_, $(TARGETS))
-fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
-check_fmt:
-	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
+
+clean:
+	rm -rf *.o *.a *_test
+
+format:
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
+
+check_style:
+	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
 
-run:
-	find . -name "Makefile" -execdir make -f {} \;
-	if find . -type f -name "*_test" -exec sh -c '{} && echo "тест пройден успешно"' \; ; then \
-    	echo "Все тесты выполнены."; \
-  	else \
-    	echo "Тесты не найдены."; \
-  	fi
+valgrind: test_CycleDetector
+	valgrind --leak-check=full ./test_CycleDetector
 
-clean:
-	find . -type f \( -name "*.o" -o -name "*.a" -o -name "*_test" \) -exec rm -f {} +
+.PHONY: tests clean valgrind
+
+# Cycle Detector
+
+CycleDetector.o: CycleDetector.c CycleDetector.h
+	gcc -g -c CycleDetector.c -o CycleDetector.o
+
+CycleDetector.a: CycleDetector.o
+	ar rc CycleDetector.a CycleDetector.o
+
+CycleDetector_test.o: CycleDetector_test.c
+	gcc -g -c CycleDetector_test.c -o CycleDetector_test.o
+
+CycleDetector_test: CycleDetector_test.o CycleDetector.a
+	gcc -g -static -o CycleDetector_test CycleDetector_test.o CycleDetector.a
+
+test_CycleDetector: CycleDetector_test
+	./CycleDetector_test
