@@ -5,10 +5,10 @@ clean:
 	rm -rf *.o *.a *_test
 
 format:
-    clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
 
 check_style:
-    clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
+	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
 
