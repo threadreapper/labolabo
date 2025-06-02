@@ -7,7 +7,7 @@ clean:
 format:
 	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
 
-check_style:
+check_fmt:
 	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
@@ -15,7 +15,7 @@ tests: $(TEST_TARGETS)
 valgrind: test_CycleDetector
 	valgrind --leak-check=full ./test_CycleDetector
 
-.PHONY: tests clean valgrind
+.PHONY: tests clean valgrind format check_fmt
 
 # Cycle Detector
 

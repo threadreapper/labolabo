@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 typedef struct Object {
-    size_t ref_count;      
-    struct Object *next;   
+  size_t ref_count;
+  struct Object *next;
 } Object;
 
 Object *create_object();
@@ -17,4 +17,4 @@ void release_object(Object *obj);
 
 void detect_and_cleanup_cycles(Object **objects, size_t count);
 
-#endif // CYCLE_DETECTOR_H
+#endif  // CYCLE_DETECTOR_H
