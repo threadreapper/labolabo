@@ -31,7 +31,7 @@ CycleDetector_test.o: CycleDetector_test.c
 	gcc -g -c CycleDetector_test.c -o CycleDetector_test.o
 
 CycleDetector_test: CycleDetector_test.o CycleDetector.a
-	gcc -g -static -o CycleDetector_test CycleDetector_test.o CycleDetector.a
+	gcc -g -o CycleDetector_test CycleDetector_test.o CycleDetector.a
 
 test_CycleDetector: CycleDetector_test
 	./CycleDetector_test
