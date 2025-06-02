@@ -30,7 +30,6 @@ void test_hash_table() {
         assert(!hash_table_insert(&table, key, &a));
     }
 
-    // Проверяем поведение при переполнении пула памяти
     int result = hash_table_insert(&table, "overflow", &a);
     if (result == HT_ALLOCATION_FAILED) {
         printf("Expected behavior: Pool memory exhausted.\n");
@@ -40,4 +39,10 @@ void test_hash_table() {
 
     hash_table_free(&table);
     free(pool.memory_start);
+}
+
+int main() {
+    test_hash_table();
+    printf("All tests passed successfully!\n");
+    return 0;
 }
