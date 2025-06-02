@@ -1,9 +1,14 @@
-name: CI for C project
+name: Continuous Integration for Dynamic Array Project
 
 on:
+  push:
+    branches:
+      - main
+      - dynamic_array
   pull_request:
     branches:
       - main
+      - dynamic_array
 
 jobs:
   build-and-test:
@@ -21,16 +26,19 @@ jobs:
       - name: Check code formatting
         run: |
           set -e
+          # Форматируем все .c и .h файлы по стандарту LLVM
           find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
+          # Проверяем, что форматирование соответствует стандарту
           find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
 
-      - name: Build project
-        run: |
-          set -e
-          make
+      - name: Clean build artifacts
+        run: make clean
 
+      - name: Build project
+        run: make
 
       - name: Run tests
-        run: |
-          set -e
-          make run
+        run: make tests
+
+      - name: Cleanup after execution
+        run: make clean
