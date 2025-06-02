@@ -1,7 +1,7 @@
 TASKS = dynamic_array
 TEST_EXECUTABLES = $(addprefix test_, $(TASKS))
 
-clear:
+clean:
 	rm -rf *.o *.a *_test
 
 check_fmt:
@@ -12,7 +12,7 @@ fmt:
 
 tests: $(TEST_EXECUTABLES)
 
-.PHONY: tests clear
+.PHONY: tests clean
 
 # Dynamic Array
 
