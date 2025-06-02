@@ -4,11 +4,11 @@ TEST_TARGETS = $(addprefix test_, $(TARGETS))
 clean:
 	rm -rf *.o *.a *_test
 
-check_style:
-	clang-format -style=Google -i `find -regex ".+\.[ch]"` --dry-run --Werror
-
 format:
-	clang-format -style=Google -i `find -regex ".+\.[ch]"`
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
+
+check_style:
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
 
