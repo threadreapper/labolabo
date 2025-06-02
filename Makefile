@@ -4,11 +4,11 @@ TEST_TARGETS = $(addprefix test_, $(TARGETS))
 clean:
 	rm -rf *.o *.a *_test
 
+check_style:
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
+
 format:
 	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
-
-check_style:
-	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
 
 tests: $(TEST_TARGETS)
 
@@ -31,5 +31,5 @@ RefCounter.a: RefCounter.o PoolAllocator.o
 RefCounter_test.o: RefCounter_test.c
 	gcc -g -c RefCounter_test.c -o RefCounter_test.o
 
-RefCounter_test: RefCounter_test.o RefCounter.a
-	gcc -g -static -o RefCounter_test RefCounter_test.o RefCounter.a
+test_RefCounter: RefCounter_test.o RefCounter.a
+	gcc -g -static -o test_RefCounter RefCounter_test.o RefCounter.a
