@@ -18,6 +18,12 @@ struct HashTable {
     PoolAllocator *allocator;
 };
 
+#define HT_SUCCESS 0
+#define HT_INIT_FAILED -1
+#define HT_KEY_EXISTS -2
+#define HT_KEY_NOT_FOUND -3
+#define HT_ALLOCATION_FAILED -4
+
 int hash_table_init(HashTable *table, size_t capacity, PoolAllocator *allocator);
 int hash_table_insert(HashTable *table, const char *key, void *value);
 void *hash_table_get(HashTable *table, const char *key);
