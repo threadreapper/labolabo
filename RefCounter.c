@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-int initialize_ref_allocator(PoolAllocator *allocator, size_t block_size, size_t num_blocks) {
+int initialize_ref_allocator(PoolAllocator *allocator, size_t block_size,
+                             size_t num_blocks) {
     return initialize_pool(allocator, block_size, num_blocks);
 }
 
@@ -28,7 +29,7 @@ void release_ref(PoolAllocator *allocator, ref_count_t *ref) {
     if (!ref || !allocator) return;
 
     if (--ref->count == 0) {
-        free(ref->object); 
+        free(ref->object);       
         free_to_pool(allocator, ref); 
     }
 }
