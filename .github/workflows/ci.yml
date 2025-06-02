@@ -15,38 +15,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  - name: Checkout code
+    uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y clang-format gcc make valgrind
+  - name: Install dependencies
+    run: |
+      sudo apt update
+      sudo apt install -y clang-format gcc make valgrind
 
-      - name: Cache build artifacts
-        id: cache-build
-        uses: actions/cache@v3
-        with:
-          path: |
-            *.o
-            *.a
-            *_test
-          key: ${{ runner.os }}-build-${{ hashFiles('**/*.c', '**/*.h', 'Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
+  - name: Format code
+    run: make format
 
-      - name: Check code formatting
-        run: make check_style
+  - name: Check code formatting
+    run: make check_style
 
-      - name: Build the project
-        run: make
+  - name: Build the project
+    run: make
 
-      - name: Run tests
-        run: make tests
+  - name: Run tests
+    run: make tests
 
-      - name: Check memory leaks
-        run: make valgrind
+  - name: Check memory leaks
+    run: make valgrind
 
-      - name: Cleanup
-        if: always()
-        run: make clean
+  - name: Cleanup
+    if: always()
+    run: make clean
