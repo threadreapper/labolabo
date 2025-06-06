@@ -1,5 +1,18 @@
-TARGETS = LinkedListOps
 TEST_TARGETS = $(addprefix test_, $(TARGETS))
+fmt:
+	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM -i {} +
+check_fmt:
+	find . -regex '.*\.[ch]' -exec clang-format -style=LLVM --dry-run --Werror {} +
+
+tests: $(TEST_TARGETS)
+
+run:
+	find . -name "Makefile" -execdir make -f {} \;
+	if find . -type f -name "*_test" -exec sh -c '{} && echo "тест пройден успешно"' \; ; then \
+		echo "Все тесты выполнены."; \
+	else \
+		echo "Тесты не найдены."; \
+		fi
 
 clean:
 	rm -rf *.o *.a *_test
