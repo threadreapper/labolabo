@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - spisok
-  pull_request:
-    branches:
-      - spisok
 
 jobs:
   build-and-test:
