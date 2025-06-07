@@ -1,3 +1,4 @@
+# Define targets
 TARGETS = StackOps
 TEST_TARGETS = $(addprefix test_, $(TARGETS))
 
