@@ -1,7 +1,7 @@
 STYLE = Google  
 
 SRC_FILES := $(wildcard *.c)
-TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  
+TARGETS := $(basename $(filter-out %_test,$(SRC_FILES))) 
 TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
 
 clean:
@@ -47,11 +47,11 @@ endef
 
 $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),$(eval $(call TEST_RULES,$(target)))))
 
-dynamic_array_test: dynamic_array_test.o dynamic_array.a linear_allocator.a
-	gcc -g -static -o dynamic_array_test dynamic_array_test.o dynamic_array.a linear_allocator.a -lm
+dynamic_array_test: dynamic_array_test.o dynamic_array.a LinearAllocator.a
+	gcc -g -static -o dynamic_array_test dynamic_array_test.o dynamic_array.a LinearAllocator.a -lm
 
-linear_allocator.o: linear_allocator.c linear_allocator.h
-	gcc -g -c linear_allocator.c -o linear_allocator.o -MMD -MP
+LinearAllocator.o: LinearAllocator.c LinearAllocator.h
+	gcc -g -c LinearAllocator.c -o LinearAllocator.o -MMD -MP
 
-linear_allocator.a: linear_allocator.o
-	ar rc linear_allocator.a linear_allocator.o
+LinearAllocator.a: LinearAllocator.o
+	ar rc LinearAllocator.a LinearAllocator.o
