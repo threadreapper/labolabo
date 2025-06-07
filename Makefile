@@ -1,7 +1,7 @@
-STYLE = Google
+STYLE = Google  
 
 SRC_FILES := $(wildcard *.c)
-TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  # Исключаем файлы тестов из TARGETS
+TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  
 TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
 
 clean:
@@ -13,7 +13,6 @@ check_style:
 format:
 	clang-format -style=$(STYLE) -i `find . -regex ".*\.[ch]"`
 
-# Запуск тестов
 tests: $(TEST_TARGETS)
 
 .PHONY: tests clean check_style format
@@ -47,3 +46,12 @@ test_$(1): $(1)_test
 endef
 
 $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),$(eval $(call TEST_RULES,$(target)))))
+
+hash_table_test: hash_table_test.o hash_table.a PoolAllocator.a
+	gcc -g -static -o hash_table_test hash_table_test.o hash_table.a PoolAllocator.a -lm
+
+PoolAllocator.o: PoolAllocator.c PoolAllocator.h
+	gcc -g -c PoolAllocator.c -o PoolAllocator.o -MMD -MP
+
+PoolAllocator.a: PoolAllocator.o
+	ar rc PoolAllocator.a PoolAllocator.o
