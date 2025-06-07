@@ -1,49 +1,39 @@
-STYLE = Google
-
-SRC_FILES := $(wildcard *.c)
-TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  # Исключаем файлы тестов из TARGETS
-TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
+TARGETS = RefCounter
+TEST_TARGETS = $(addprefix test_, $(TARGETS))
 
 clean:
-	rm -rf *.o *.a *_test *.d
-
-check_style:
-	clang-format -style=$(STYLE) -i `find . -regex ".*\.[ch]"` --dry-run --Werror
+	rm -rf *.o *.a *_test
 
 format:
-	clang-format -style=$(STYLE) -i `find . -regex ".*\.[ch]"`
+	clang-format -style=Google -i `find . -regex ".*\.\(c\|h\)"`
 
-# Запуск тестов
+check_style:
+	clang-format -style=Google `find . -regex ".*\.\(c\|h\)"` --dry-run --Werror
+
 tests: $(TEST_TARGETS)
 
-.PHONY: tests clean check_style format
+valgrind: test_RefCounter
+	valgrind --leak-check=full ./test_RefCounter
 
-DEP_FILES := $(patsubst %.c,%.d,$(SRC_FILES))
--include $(DEP_FILES)
+.PHONY: tests clean valgrind
 
 define TARGET_RULES
 
-$(1).o: $(1).c
-	gcc -g -c $(1).c -o $(1).o -MMD -MP
+$(1).o: $(1).c $(1).h
+	gcc -g -c $(1).c -o $(1).o
 
-$(1).a: $(1).o
-	ar rc $(1).a $(1).o
+$(1).a: $(1).o PoolAllocator.o
+	ar rc $(1).a $(1).o PoolAllocator.o
+
+$(1)_test.o: $(1)_test.c $(1).h
+	gcc -g -c $(1)_test.c -o $(1)_test.o
+
+test_$(1): $(1)_test.o $(1).a
+	gcc -g -static -o test_$(1) $(1)_test.o $(1).a
 
 endef
 
 $(foreach target,$(TARGETS),$(eval $(call TARGET_RULES,$(target))))
 
-define TEST_RULES
-
-$(1)_test.o: $(1)_test.c
-	gcc -g -c $(1)_test.c -o $(1)_test.o -MMD -MP
-
-$(1)_test: $(1)_test.o $(1).a
-	gcc -g -static -o $(1)_test $(1)_test.o $(1).a -lm
-
-test_$(1): $(1)_test
-	./$(1)_test
-
-endef
-
-$(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),$(eval $(call TEST_RULES,$(target)))))
+PoolAllocator.o: PoolAllocator.c PoolAllocator.h
+	gcc -g -c PoolAllocator.c -o PoolAllocator.o
