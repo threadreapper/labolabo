@@ -1,18 +1,31 @@
 TARGETS = StackOps
 TEST_TARGETS = $(addprefix test_, $(TARGETS))
 
+# Clean up build artifacts
 clean:
 	rm -rf *.o *.a *_test
 
+# Format source code using clang-format
+fmt:
+	find . -regex '.*\.[ch]' -exec clang-format -style=Google -i {} +
+
+# Check formatting without modifying files
 check_fmt:
 	clang-format -style=Google -i `find -regex ".+\.[ch]"` --dry-run --Werror
 
-fmt:
-	clang-format -style=Google -i `find -regex ".+\.[ch]"`
-
+# Build and run tests
 tests: $(TEST_TARGETS)
 
-.PHONY: tests clean
+run:
+	find . -name "Makefile" -execdir make -f {} \;
+	if find . -type f -name "*_test" -exec sh -c '{} && echo "тест пройден успешно"' \; ; then \
+		echo "Все тесты выполнены."; \
+	else \
+		echo "Тесты не найдены."; \
+	fi
+
+# Declare phony targets
+.PHONY: tests clean fmt check_fmt run
 
 # Stack Operations
 
