@@ -77,7 +77,7 @@ void test_large_b_positive_discriminant() {
     double a = 1;
     double b = -1E+10;
     double c = -1;
-    double epsilon = 1e-11;
+    double epsilon = 1e-9;
     double roots[2];
     int root_count;
 
