@@ -1,7 +1,7 @@
-STYLE = Google
+STYLE = Google  
 
 SRC_FILES := $(wildcard *.c)
-TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  # Исключаем файлы тестов из TARGETS
+TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  
 TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
 
 clean:
@@ -13,7 +13,6 @@ check_style:
 format:
 	clang-format -style=$(STYLE) -i `find . -regex ".*\.[ch]"`
 
-# Запуск тестов
 tests: $(TEST_TARGETS)
 
 .PHONY: tests clean check_style format
@@ -47,3 +46,12 @@ test_$(1): $(1)_test
 endef
 
 $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),$(eval $(call TEST_RULES,$(target)))))
+
+dynamic_array_test: dynamic_array_test.o dynamic_array.a linear_allocator.a
+	gcc -g -static -o dynamic_array_test dynamic_array_test.o dynamic_array.a linear_allocator.a -lm
+
+linear_allocator.o: linear_allocator.c linear_allocator.h
+	gcc -g -c linear_allocator.c -o linear_allocator.o -MMD -MP
+
+linear_allocator.a: linear_allocator.o
+	ar rc linear_allocator.a linear_allocator.o
