@@ -1,0 +1,67 @@
+name: Continuous Integration for All Projects
+
+on:
+  push:
+    branches:
+      - main
+      - hash_table
+      - linear_allocator
+      - pool_allocator
+      - CycleDetector
+      - ObjectManager
+      - RefCounter
+      - dynamic_array
+      - integral
+      - quadratic
+      - spisok
+      - stack
+  pull_request:
+    branches:
+      - main
+      - hash_table
+      - linear_allocator
+      - pool_allocator
+      - CycleDetector
+      - ObjectManager
+      - RefCounter
+      - dynamic_array
+      - integral
+      - quadratic
+      - spisok
+      - stack
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y gcc make clang-format
+
+      - name: Check code formatting
+        run: |
+          set -e
+          # Определяем стиль форматирования на основе ветки
+          STYLE=${{ github.ref_name == 'hash_table' && 'LLVM' || 'Google' }}
+          echo "Using style: $STYLE"
+          # Форматируем все .c и .h файлы
+          find . -regex '.*\.[ch]' -exec clang-format -style=$STYLE -i {} +
+          # Проверяем, что форматирование соответствует стандарту
+          find . -regex '.*\.[ch]' -exec clang-format -style=$STYLE --dry-run --Werror {} +
+
+      - name: Clean build artifacts
+        run: make clean
+
+      - name: Build project
+        run: make
+
+      - name: Run tests
+        run: make tests
+
+      - name: Cleanup after execution
+        run: make clean
