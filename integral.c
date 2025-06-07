@@ -1,4 +1,4 @@
-#include "integralFunc.h"
+#include "integral.h"
 double calculation(double a, double b, int n, double (*func)(double)) {
   double h = (b - a) / n;
   double sum = 1 / 2 * (func(a) + func(b));

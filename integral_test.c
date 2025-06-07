@@ -1,4 +1,4 @@
-#include "integralFunc.h"
+#include "integral.h"
 #include <assert.h>
 double Function(double x) { return cos(x); }
 void integral_test1() {
