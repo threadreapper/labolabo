@@ -4,31 +4,31 @@ on:
   push:
     branches:
       - main
-      - hash_table
-      - linear_allocator
-      - pool_allocator
-      - CycleDetector
-      - ObjectManager
-      - RefCounter
-      - dynamic_array
-      - integral
-      - quadratic
-      - spisok
-      - stack
+      - hash_table1
+      - linear_allocator1
+      - pool_allocator1
+      - CycleDetector1
+      - ObjectManager1
+      - RefCounter1
+      - dynamic_array1
+      - integral1
+      - quadratic1
+      - spisok1
+      - stack1
   pull_request:
     branches:
       - main
-      - hash_table
-      - linear_allocator
-      - pool_allocator
-      - CycleDetector
-      - ObjectManager
-      - RefCounter
-      - dynamic_array
-      - integral
-      - quadratic
-      - spisok
-      - stack
+      - hash_table1
+      - linear_allocator1
+      - pool_allocator1
+      - CycleDetector1
+      - ObjectManager1
+      - RefCounter1
+      - dynamic_array1
+      - integral1
+      - quadratic1
+      - spisok1
+      - stack1
 
 jobs:
   build-and-test:
