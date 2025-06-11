@@ -1,7 +1,7 @@
 STYLE = Google
 
 SRC_FILES := $(wildcard *.c)
-TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  # Исключаем файлы тестов из TARGETS
+TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))
 TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
 
 clean:
@@ -13,10 +13,17 @@ check_style:
 format:
 	clang-format -style=$(STYLE) -i `find . -regex ".*\.[ch]"`
 
-# Запуск тестов
 tests: $(TEST_TARGETS)
 
-.PHONY: tests clean check_style format
+valgrind: $(TEST_TARGETS)
+	@echo "Running Valgrind memory checks..."
+	@for test in $(TEST_TARGETS); do \
+		echo "Checking $$test with Valgrind..."; \
+		valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 --errors-for-leak-kinds=all ./$$test || exit 1; \
+	done
+	@echo "All tests passed Valgrind checks successfully!"
+
+.PHONY: tests clean check_style format valgrind
 
 DEP_FILES := $(patsubst %.c,%.d,$(SRC_FILES))
 -include $(DEP_FILES)

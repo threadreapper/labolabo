@@ -15,6 +15,7 @@ on:
       - quadratic1
       - spisok1
       - stack1
+      - valgrind_ivanov
   pull_request:
     branches:
       - main
@@ -29,6 +30,7 @@ on:
       - quadratic1
       - spisok1
       - stack1
+      - valgrind_ivanov
 
 jobs:
   build-and-test:
