@@ -2,7 +2,9 @@ STYLE = Google
 
 SRC_FILES := $(wildcard *.c)
 
-TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  
+SRC_FILES := $(filter-out %_test.c,$(SRC_FILES))
+
+TARGETS := $(basename $(SRC_FILES))  
 
 TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
 
