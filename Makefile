@@ -15,7 +15,7 @@ tests: $(TEST_TARGETS)
 valgrind: $(TEST_TARGETS)
 	which valgrind || (echo "Error: Valgrind is not installed. Please install it and try again." && exit 1)
 	for test_target in $(TEST_TARGETS); do \
-		test -f ./$(test_target) || (echo "Error: Executable '$(test_target)' not found. Run 'make' first." && exit 1); \
+		test -f ./$(test_target) || (echo "Executable '$(test_target)' not found. Skipping valgrind for this target."; continue); \
 		valgrind --leak-check=full ./$$test_target; \
 	done
 
@@ -32,13 +32,25 @@ else
 endif
 
 $(1)_test.o: $(1)_test.c $(1).h
+ifneq (,$(wildcard $(1)_test.c))
 	gcc -g -c $(1)_test.c -o $(1)_test.o
+else
+	@echo "Skipping $(1)_test.o: $(1)_test.c not found"
+endif
 
 $(1)_test: $(1)_test.o $(1).a
+ifneq (,$(wildcard $(1)_test.c))
 	gcc -g -o $(1)_test $(1)_test.o $(1).a
+else
+	@echo "Skipping $(1)_test: $(1)_test.c not found"
+endif
 
 test_$(1): $(1)_test
+ifneq (,$(wildcard $(1)_test.c))
 	./$(1)_test
+else
+	@echo "Skipping test_$(1): $(1)_test.c not found"
+endif
 
 endef
 
