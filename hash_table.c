@@ -43,7 +43,7 @@ int hash_table_insert(HashTable *table, const char *key, void *value) {
     size_t key_length = strlen(key) + 1;
     newNode->key = allocate_from_pool(table->allocator);
     if (!newNode->key) {
-        free_to_pool(table->allocator, newNode); // Освобождаем узел, если не удалось выделить память для ключа
+        free_to_pool(table->allocator, newNode);
         return HT_ALLOCATION_FAILED;
     }
     memcpy((void *)newNode->key, key, key_length);
