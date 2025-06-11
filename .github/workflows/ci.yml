@@ -15,6 +15,7 @@ on:
       - quadratic1
       - spisok1
       - stack1
+      - line_alloc_leo_new
   pull_request:
     branches:
       - main
@@ -29,6 +30,7 @@ on:
       - quadratic1
       - spisok1
       - stack1
+      - line_alloc_leo_new
 
 jobs:
   build-and-test:
