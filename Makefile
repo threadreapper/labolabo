@@ -13,10 +13,14 @@ check_style:
 tests: $(TEST_TARGETS)
 
 valgrind: $(TEST_TARGETS)
-	which valgrind || (echo "Error: Valgrind is not installed. Please install it and try again." && exit 1)
+	@which valgrind > /dev/null 2>&1 || (echo "Error: Valgrind is not installed. Skipping valgrind tests." && exit 0)
 	for test_target in $(TEST_TARGETS); do \
-		test -f ./$(test_target) || (echo "Executable '$(test_target)' not found. Skipping valgrind for this target."; continue); \
-		valgrind --leak-check=full ./$$test_target; \
+		if [ -f "./$(test_target)" ]; then \
+			echo "Running valgrind for $(test_target)..."; \
+			valgrind --leak-check=full ./$$test_target; \
+		else \
+			echo "Skipping valgrind for $(test_target): executable not found."; \
+		fi \
 	done
 
 define TARGET_RULES
