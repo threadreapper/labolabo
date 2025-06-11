@@ -27,8 +27,7 @@ $(1)_test: $(1)_test.o $(1).a PoolAllocator.a
 test_$(1): $(1)_test
 	./$(1)_test
 endef
-
-$(foreach target,$(TARGETS),$(eval $(call TARGET_RULES,$(target))))
+$(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),$(eval $(call TEST_RULES,$(target)))))
 
 define TEST_RULES
 $(1)_test.o: $(1)_test.c
