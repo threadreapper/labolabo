@@ -1,4 +1,5 @@
-	#include "hash_table.h"
+#include "hash_table.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
