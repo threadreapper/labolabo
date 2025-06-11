@@ -63,7 +63,7 @@ jobs:
         run: make
 
       - name: Run tests
-        run: make tests
+        run: make -k tests
 
       - name: Cleanup after execution
         run: make clean
