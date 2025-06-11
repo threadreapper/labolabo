@@ -62,8 +62,11 @@ jobs:
       - name: Build project
         run: make
 
-      - name: Run tests
+      - name: Run make tests
         run: make -k tests
+
+      - name: Run valgrind
+        run: make valgrind
 
       - name: Cleanup after execution
         run: make clean

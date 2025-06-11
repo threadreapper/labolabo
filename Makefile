@@ -21,42 +21,50 @@ valgrind: $(TEST_TARGETS)
 
 define TARGET_RULES
 
-$(1).o: $(1).c $(1).h
-	gcc -g -c $(1).c -o $(1).o
+ifneq (,$(wildcard src/$(1).c))
+$(1).o: src/$(1).c src/$(1).h
+	gcc -g -c src/$(1).c -o $(1).o
+else
+$(1).o:
+	@echo "Skipping $(1).o: src/$(1).c not found"
+endif
 
+ifneq (,$(wildcard src/$(1).c))
 $(1).a: $(1).o
 ifeq ($(1),RefCounter)
 	ar rc $(1).a $(1).o PoolAllocator.o
 else
 	ar rc $(1).a $(1).o
 endif
-
-$(1)_test.o: $(1)_test.c $(1).h
-ifneq (,$(wildcard $(1)_test.c))
-	gcc -g -c $(1)_test.c -o $(1)_test.o
 else
-	@echo "Skipping $(1)_test.o: $(1)_test.c not found"
+$(1).a:
+	@echo "Skipping $(1).a: src/$(1).c not found"
 endif
+
+ifneq (,$(wildcard tests/$(1)_test.c))
+$(1)_test.o: tests/$(1)_test.c src/$(1).h
+	gcc -g -c tests/$(1)_test.c -o $(1)_test.o
 
 $(1)_test: $(1)_test.o $(1).a
-ifneq (,$(wildcard $(1)_test.c))
 	gcc -g -o $(1)_test $(1)_test.o $(1).a
-else
-	@echo "Skipping $(1)_test: $(1)_test.c not found"
-endif
 
 test_$(1): $(1)_test
-ifneq (,$(wildcard $(1)_test.c))
 	./$(1)_test
 else
-	@echo "Skipping test_$(1): $(1)_test.c not found"
+test_$(1):
+	@echo "Skipping test_$(1): tests/$(1)_test.c not found"
 endif
 
 endef
 
 $(foreach target,$(TARGETS),$(eval $(call TARGET_RULES,$(target))))
 
-PoolAllocator.o: PoolAllocator.c PoolAllocator.h
-	gcc -g -c PoolAllocator.c -o PoolAllocator.o
+ifneq (,$(wildcard src/PoolAllocator.c))
+PoolAllocator.o: src/PoolAllocator.c src/PoolAllocator.h
+	gcc -g -c src/PoolAllocator.c -o PoolAllocator.o
+else
+PoolAllocator.o:
+	@echo "Skipping PoolAllocator.o: src/PoolAllocator.c not found"
+endif
 
 .PHONY: tests clean valgrind format check_style
