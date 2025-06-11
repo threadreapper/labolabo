@@ -7,7 +7,7 @@
 void test_hash_table() {
     PoolAllocator pool;
     const size_t block_size = sizeof(Node);
-    const size_t num_blocks = 10; 
+    const size_t num_blocks = 20; 
     initialize_pool(&pool, block_size, num_blocks);
 
     HashTable table;
