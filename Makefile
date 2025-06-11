@@ -19,14 +19,16 @@ tests: $(TEST_TARGETS)
 DEP_FILES := $(patsubst %.c,%.d,$(SRC_FILES))
 -include $(DEP_FILES)
 
+# Определение правил для основных целей
 define TARGET_RULES
 $(1).o: $(1).c
-	gcc -g -c $(1).c -o $(1).o -MMD -MP
+    gcc -g -c $(1).c -o $(1).o -MMD -MP
 $(1).a: $(1).o
-	ar rc $(1).a $(1).o
+    ar rc $(1).a $(1).o
 endef
 
-$(foreach target,$(TARGETS),$(eval $(call TARGET_RULES,$(target))))
+$(foreach target,$(filter-out test_$(TARGETS),$(TARGETS)),\
+	$(eval $(call TARGET_RULES,$(target))))
 
 define TEST_RULES
 $(1)_test.o: $(1)_test.c
