@@ -15,6 +15,7 @@ on:
       - quadratic1
       - spisok1
       - stack1
+      - valgrind
   pull_request:
     branches:
       - main
@@ -29,6 +30,7 @@ on:
       - quadratic1
       - spisok1
       - stack1
+      - valgrind
 
 jobs:
   build-and-test:
@@ -60,8 +62,11 @@ jobs:
       - name: Build project
         run: make
 
-      - name: Run tests
-        run: make tests
+      - name: Run make tests
+        run: make -k tests
+
+      - name: Run valgrind
+        run: make valgrind
 
       - name: Cleanup after execution
         run: make clean
