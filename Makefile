@@ -1,6 +1,9 @@
 STYLE = Google  
+
 SRC_FILES := $(wildcard *.c)
+
 TARGETS := $(basename $(filter-out %_test,$(SRC_FILES)))  
+
 TEST_TARGETS := $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),test_$(target)))
 
 clean:
@@ -26,8 +29,7 @@ $(1).a: $(1).o
 	ar rc $(1).a $(1).o
 endef
 
-$(foreach target,$(filter-out test_$(TARGETS),$(TARGETS)),\
-	$(eval $(call TARGET_RULES,$(target))))
+$(foreach target,$(TARGETS),$(eval $(call TARGET_RULES,$(target))))
 
 define TEST_RULES
 $(1)_test.o: $(1)_test.c
