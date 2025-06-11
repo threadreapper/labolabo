@@ -28,6 +28,7 @@ int hash_table_init(HashTable *table, size_t capacity, PoolAllocator *allocator)
 int hash_table_insert(HashTable *table, const char *key, void *value) {
     size_t index = hash(key, table->capacity);
     struct Node *current = table->buckets[index];
+
     while (current) {
         if (strcmp(current->key, key) == 0) {
             current->value = value;
@@ -37,8 +38,9 @@ int hash_table_insert(HashTable *table, const char *key, void *value) {
     }
 
     struct Node *newNode = (struct Node *)allocate_from_pool(table->allocator);
-    if (!newNode)
+    if (!newNode) {
         return HT_ALLOCATION_FAILED;
+    }
 
     size_t key_length = strlen(key) + 1;
     newNode->key = allocate_from_pool(table->allocator);
@@ -46,7 +48,8 @@ int hash_table_insert(HashTable *table, const char *key, void *value) {
         free_to_pool(table->allocator, newNode);
         return HT_ALLOCATION_FAILED;
     }
-    memcpy((void *)newNode->key, key, key_length);
+
+    memcpy(newNode->key, key, key_length);
 
     newNode->value = value;
     newNode->next = table->buckets[index];
