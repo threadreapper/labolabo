@@ -35,19 +35,23 @@ int hash_table_insert(HashTable *table, const char *key, void *value) {
         }
         current = current->next;
     }
+
     struct Node *newNode = (struct Node *)allocate_from_pool(table->allocator);
     if (!newNode)
         return HT_ALLOCATION_FAILED;
+
     size_t key_length = strlen(key) + 1;
     newNode->key = allocate_from_pool(table->allocator);
     if (!newNode->key) {
-        free_to_pool(table->allocator, newNode);
+        free_to_pool(table->allocator, newNode); // Освобождаем узел, если не удалось выделить память для ключа
         return HT_ALLOCATION_FAILED;
     }
     memcpy((void *)newNode->key, key, key_length);
+
     newNode->value = value;
     newNode->next = table->buckets[index];
     table->buckets[index] = newNode;
+
     return HT_SUCCESS;
 }
 

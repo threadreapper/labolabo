@@ -46,12 +46,3 @@ test_$(1): $(1)_test
 endef
 
 $(foreach target,$(TARGETS),$(if $(wildcard $(target)_test.c),$(eval $(call TEST_RULES,$(target)))))
-
-hash_table_test: hash_table_test.o hash_table.a PoolAllocator.a
-	gcc -g -static -o hash_table_test hash_table_test.o hash_table.a PoolAllocator.a -lm
-
-PoolAllocator.o: PoolAllocator.c PoolAllocator.h
-	gcc -g -c PoolAllocator.c -o PoolAllocator.o -MMD -MP
-
-PoolAllocator.a: PoolAllocator.o
-	ar rc PoolAllocator.a PoolAllocator.o
